@@ -1,0 +1,11 @@
+Name,HP,Attack,Defense,Sp_Atk,Sp_Def,Speed,Type
+"Koffing", 40	, 65	, 95	, 60	, 45	, 35, "Poison"
+"Pikachu", 35	, 55	, 40	, 50, 50	, 90	, "Electric"
+"Shellder", 30	, 65	, 100	, 45	, 25	, 40	, "Water"
+"Krabby", 30	, 105	, 90	, 25	, 25	, 50	, "Water"
+"Voltorb", 40	, 30	, 50	, 55	, 55	, 100	, "Electric"
+"Cubone", 50	, 50	, 95	, 40	, 50	, 35	, "Ground"
+"Magikarp", 20	, 10	, 55	, 15	, 20	, 80, "Water"
+"Pineco", 50	, 65	, 90	, 35	, 35	, 15, "Bug"
+"Misdreavus", 60	, 60	, 60	, 85	, 85	, 85, "Ghost"
+"Phanpy", 90	, 60	, 60	, 40	, 40	, 40, "Ground"
