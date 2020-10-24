@@ -1,0 +1,17 @@
+Name,Color,Evolves,HP,Attack,Defense,SpAtk,SpDef,Speed
+Caterpie,Green,True,45,30,35,20,20,45
+Metapod,Green,True,50,20,55,25,25,30
+Scyther,Green,False,70,110,80,55,80,105
+Bulbasaur,Green,True,45,49,49,65,65,45
+Dratini,Blue,True,41,64,45,50,50,50
+Squirtle,Blue,True,44,48,65,50,64,43
+Poliwag,Blue,True,40,50,40,40,40,90
+Poliwhirl,Blue,True,65,65,65,50,50,90
+Charmander,Red,True,39,52,43,60,50,65
+Magmar,Red,False,65,95,57,100,85,93
+Paras,Red,True,35,70,55,45,55,25
+Parasect,Red,False,60,95,80,60,80,30
+Pikachu,Yellow,True,35,55,40,50,50,90
+Abra,Yellow,True,25,20,15,105,55,90
+Psyduck,Yellow,True,50,52,48,65,50,55
+Kadabra,Yellow,True,40,35,30,120,70,10
