@@ -5,18 +5,19 @@ import { aws_lambda as lambda } from "aws-cdk-lib";
 import { aws_dynamodb as dynamo } from "aws-cdk-lib";
 import { aws_s3_notifications as s3n } from "aws-cdk-lib";
 import { aws_iam as iam } from "aws-cdk-lib";
+import { aws_sns as sns } from "aws-cdk-lib";
+import { aws_sns_subscriptions as subscriptions } from "aws-cdk-lib";
 
-interface ServerlessPdfContentModerationPipelineStackProps
-  extends cdk.StackProps {
+interface ServerlessPdfFullPipelineStackProps extends cdk.StackProps {
   targetDpi: number;
   minimum_moderation_confidence: number;
 }
 
-export class ServerlessPdfContentModerationPipelineStack extends cdk.Stack {
+export class ServerlessPdfFullPipelineStack extends cdk.Stack {
   constructor(
     scope: Construct,
     id: string,
-    props: ServerlessPdfContentModerationPipelineStackProps
+    props: ServerlessPdfFullPipelineStackProps
   ) {
     super(scope, id, props);
 
@@ -26,6 +27,11 @@ export class ServerlessPdfContentModerationPipelineStack extends cdk.Stack {
     });
 
     const imageBucket = new s3.Bucket(this, "imageBucket", {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    const textBucket = new s3.Bucket(this, "textBucket", {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
@@ -54,6 +60,21 @@ export class ServerlessPdfContentModerationPipelineStack extends cdk.Stack {
       }
     );
 
+    const textExtractionFunction = new lambda.Function(
+      this,
+      "textExtractionFunction",
+      {
+        runtime: lambda.Runtime.RUBY_3_3,
+        code: lambda.Code.fromAsset("lambdas/text_extractor"),
+        handler: "text_extractor.handler",
+        environment: {
+          TEXT_BUCKET_NAME: textBucket.bucketName,
+        },
+        description: "Extracts text from each image that gets created",
+        timeout: cdk.Duration.seconds(120),
+      }
+    );
+
     const imageModerationFunction = new lambda.Function(
       this,
       "imageModerationFunction",
@@ -71,6 +92,14 @@ export class ServerlessPdfContentModerationPipelineStack extends cdk.Stack {
       }
     );
 
+    // Create an SNS topic and use event fanout
+    const snsTopic = new sns.Topic(this, "imageBucketObjectCreatedTopic", {
+      topicName: "imageBucketObjectCreatedTopic",
+      displayName:
+        "SNS Topic for doing fan-out on the object_created events from the image S3 bucket",
+    });
+
+    // Enable buckets to emit events when objects are created
     landingBucket.addEventNotification(
       s3.EventType.OBJECT_CREATED,
       new s3n.LambdaDestination(pdfTransformerFunction),
@@ -79,17 +108,33 @@ export class ServerlessPdfContentModerationPipelineStack extends cdk.Stack {
 
     imageBucket.addEventNotification(
       s3.EventType.OBJECT_CREATED,
-      new s3n.LambdaDestination(imageModerationFunction),
+      new s3n.SnsDestination(snsTopic),
       { suffix: ".png" }
     );
 
-    // Bucket and table read/write permissions for the functions
+    snsTopic.addSubscription(
+      new subscriptions.LambdaSubscription(textExtractionFunction)
+    );
+    snsTopic.addSubscription(
+      new subscriptions.LambdaSubscription(imageModerationFunction)
+    );
+
+    // Allow the lambda to read from the source bucket, and write on the target buckets and dynamo table
     landingBucket.grantRead(pdfTransformerFunction);
     imageBucket.grantWrite(pdfTransformerFunction);
+    imageBucket.grantRead(textExtractionFunction);
+    textBucket.grantWrite(textExtractionFunction);
     imageBucket.grantRead(imageModerationFunction);
     labelsTable.grantWriteData(imageModerationFunction);
 
-    // Allow the image moderation lambda function to query the REKOGNITION API
+    // Allow the text extraction lambda function to query the TEXTRACT API
+    const textractPolicy = new iam.PolicyStatement({
+      actions: ["textract:DetectDocumentText"],
+      resources: ["*"],
+    });
+    textExtractionFunction.addToRolePolicy(textractPolicy);
+
+    // Same for the other lambda, but with Rekognition
     const rekognitionPolicy = new iam.PolicyStatement({
       actions: ["rekognition:DetectModerationLabels"],
       resources: ["*"],
