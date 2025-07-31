@@ -1,14 +1,6 @@
-# Welcome to your CDK TypeScript project
+# Serverless Pdf Processing Pipeline
 
-This is a blank project for CDK development with TypeScript.
+![project workflow image](./fullTransformWorkflow.png)
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
-## Useful commands
-
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `npx cdk deploy`  deploy this stack to your default AWS account/region
-* `npx cdk diff`    compare deployed stack with current state
-* `npx cdk synth`   emits the synthesized CloudFormation template
+[The walkthrough for the project can be found ... well nowhere, I haven't written it yet. But hey, here are some other cool posts](https://brainstobytes.com)
