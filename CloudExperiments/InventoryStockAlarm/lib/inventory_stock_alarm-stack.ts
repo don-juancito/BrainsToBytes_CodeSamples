@@ -31,7 +31,7 @@ export class InventoryStockAlarmStack extends cdk.Stack {
         "SNS Topic to notify me by email if the product is available",
     });
 
-    const dlq = new sqs.Queue(this, "deatLetterQueue");
+    const dlq = new sqs.Queue(this, "deadLetterQueue");
 
     const crawlerFunction = new lambda.Function(this, "crawlerFunction", {
       runtime: lambda.Runtime.PYTHON_3_13,
