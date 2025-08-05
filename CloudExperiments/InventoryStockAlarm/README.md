@@ -1,4 +1,4 @@
-# Serverless Pdf Processing Pipeline
+# Inventory Stock Alarm
 
 ![project workflow image](./inventoryStockAlarmDiagram.png)
 
