@@ -1,4 +1,4 @@
-# Serverless Pdf Processing Pipeline
+# Serverless PDF Processing Pipeline
 
 ![project workflow image](./pdfTransformWorkflow.png)
 

@@ -1,4 +1,4 @@
-# Serverless Pdf Processing Pipeline
+# Serverless PDF Moderation Pipeline
 
 ![project workflow image](./pdfModerationWorkflow.png)
 
